@@ -38,7 +38,7 @@
 **Headers**
 | Заголовок | Тип | Обязательно | Описание |
 |--------------------|--------|--------------|----------|
-| `Authorization` | string | Да | `Bearer <JWT>` полученный из [`/api/auth/login`](#post-apiauthlogin). |
+| `Authorization` | string | Да | `Bearer <JWT>` полученный из [`/api/v1/auth/login`](#post-apiauthlogin). |
 
 **Response 200**
 
