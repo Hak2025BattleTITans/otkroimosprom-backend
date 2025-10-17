@@ -32,7 +32,7 @@ RUN pip install -vv -r requirements.txt
 
 # Копируем исходники
 COPY src ./src
-COPY pyproject.toml setup.py ./
+COPY pyproject.toml ./
 ENV PYTHONPATH=/app/src
 
 # Проверим валидность pyproject.toml
