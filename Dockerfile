@@ -49,12 +49,12 @@ if p.exists():
 PY
 
 # Сборка .so инплейс (и диагностика, если что-то не так)
-RUN set -eux; \
-    python -V; \
-    ls -la src || true; \
-    find src -maxdepth 4 -type d -name "core*" -o -name "optim*" || true; \
-    find src -maxdepth 4 -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.pyx" \) || true; \
-    python setup.py build_ext --inplace -v
+# RUN set -eux; \
+#     python -V; \
+#     ls -la src || true; \
+#     find src -maxdepth 4 -type d -name "core*" -o -name "optim*" || true; \
+#     find src -maxdepth 4 -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.pyx" \) || true; \
+#     python setup.py build_ext --inplace -v
 
 # Нерутовый пользователь
 RUN useradd -m appuser && chown -R appuser:appuser /app
