@@ -9,6 +9,7 @@ __version__ = "1.0"
 __author__ = "Wiered"
 
 import logging
+from logging.config import dictConfig
 from typing import Generator
 
 from sqlmodel import Session, SQLModel, create_engine
@@ -16,7 +17,14 @@ from sqlmodel import Session, SQLModel, create_engine
 import models as models
 from settings import settings
 
+from logging_config import LOGGING_CONFIG, ColoredFormatter
+
+dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger(__name__)
+root_logger = logging.getLogger()
+for handler in root_logger.handlers:
+    if type(handler) is logging.StreamHandler:
+        handler.setFormatter(ColoredFormatter('%(levelname)s:     %(asctime)s %(name)s - %(message)s'))
 
 class DataBase:
     def __init__(self, postgresql_uri):
