@@ -19,7 +19,7 @@ class User(SQLModel, table=True):
         sa_column_kwargs={"autoincrement": True}
     )
     username: str = Field(description="Имя пользователя")
-    salt = Field(description="Соль для пароля")
+    salt: str = Field(description="Соль для пароля")
     password_hash: str = Field(description="Хеш пароля")
     updated_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
     created_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
