@@ -14,11 +14,11 @@ from jose import JWTError, jwt
 from pydantic import BaseModel, Field
 from sqlmodel import Session
 
-from src.repositories.user_repository import UserRepository
-from src.models import User, Token
-from src.database.database import db
+from repositories.user_repository import UserRepository
+from models import User, Token
+from database.database import db
 from logging_config import LOGGING_CONFIG, ColoredFormatter
-from src.settings import settings
+from settings import settings
 
 # Setup logging
 dictConfig(LOGGING_CONFIG)
@@ -183,8 +183,58 @@ async def register(user_data: UserRegister):
         session.close()
 
 @router.post("/login", response_model=TokenResponse)
-async def login(user_data: UserLogin):
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     """Вход в систему"""
+    logger.info(f"Login attempt for user: {form_data.username}")
+
+    session = get_session()
+    try:
+        user_repo = UserRepository(session)
+        user = user_repo.get_by_username(form_data.username)
+
+        if not user or not verify_password(form_data.password, user.password_hash, user.salt):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        # Создаем токен
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": user.username}, expires_delta=access_token_expires
+        )
+
+        # Сохраняем токен в базу
+        token = Token(
+            access_token=access_token,
+            user_id=user.id,
+            expires_at=datetime.now(timezone.utc) + access_token_expires
+        )
+        session.add(token)
+        session.commit()
+
+        logger.info(f"User {user.username} logged in successfully")
+        return TokenResponse(
+            access_token=access_token,
+            token_type="bearer",
+            expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error during login: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Login failed"
+        )
+    finally:
+        session.close()
+
+@router.post("/login-json", response_model=TokenResponse)
+async def login_json(user_data: UserLogin):
+    """Вход в систему через JSON"""
     logger.info(f"Login attempt for user: {user_data.username}")
 
     session = get_session()
