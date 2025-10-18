@@ -2,6 +2,7 @@
 import uvicorn
 
 from api.app import app
+from database import db
 from settings import settings
 
 if __name__ == "__main__":
@@ -10,6 +11,8 @@ if __name__ == "__main__":
     log_level = settings.logging_level
     reload_enabled = settings.reload in ("1", "true", "yes")
     workers = settings.workers
+
+    db.createAllTables()
 
     uvicorn.run(
         app,
