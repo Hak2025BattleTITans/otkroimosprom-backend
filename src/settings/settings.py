@@ -1,8 +1,10 @@
-﻿from pathlib import Path
+﻿import os
+from pathlib import Path
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT = Path(__file__).resolve().parents[2]
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -13,6 +15,8 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
+    env: str = "prod"
+
     postgresql_uri: str
     logging_level: str = "info"
     logging_format: str = "standard"
@@ -22,9 +26,19 @@ class Settings(BaseSettings):
     reload: bool = False
     workers: int = 1
 
-    env: str = "prod"
+
 
     access_token_expire_minutes: int = 60
 
+    optimized_dir: str = "optimized"
+    upload_dir: str = "uploads"
+
 settings = Settings()
+
+OPTIMIZED_DIR = Path(settings.optimized_dir).resolve()
+OPTIMIZED_DIR.mkdir(parents=True, exist_ok=True)
+
+UPLOAD_DIR = Path(settings.upload_dir).resolve()
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
 print(settings.postgresql_uri)
