@@ -32,6 +32,8 @@ class Settings(BaseSettings):
 
     optimized_dir: str = "optimized"
     upload_dir: str = "uploads"
+    max_file_size_bytes: int = 5 * 1024 * 1024 # 5 MB
+    csv_content_types: list[str] = ["text/csv", "application/vnd.ms-excel"]
 
 settings = Settings()
 
