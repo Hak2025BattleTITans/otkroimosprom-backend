@@ -1,4 +1,5 @@
 import datetime
+from enum import Enum
 import os
 from typing import Any, Dict, List, Optional
 
@@ -79,6 +80,12 @@ class CompanyUpdate(SQLModel):
     json_data: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON, nullable=True))
 
 
+class ConfirmationStatus(str, Enum):
+    confirmed = "Подтверждён"
+    user_confirmed = "Подтверждён пользователем"
+    not_confirmed = "Не подтверждён"
+
+
 class Company(SQLModel, table=True):
     __tablename__ = "companies"
     id: Optional[int] = Field(
@@ -92,9 +99,10 @@ class Company(SQLModel, table=True):
     name: str = Field(description="Название компании")
     organization_type: Optional[str] = None
     main_industry: Optional[str] = None
-    sub_industry: Optional[str] = None
+    support_measures: Optional[bool] = None
+    special_status: Optional[str] = None
 
-    confirmed_by: Optional[str] = Field(description="Кто подтвердил компанию")
+    confirmation_status: ConfirmationStatus = Field(default=ConfirmationStatus.not_confirmed)
     confirmed_at: Optional[datetime.datetime] = Field(description="Когда подтвердили компанию")
     confirmer_identifier: Optional[str] = Field(description="Идентификатор (логин или имя системы)")
 
