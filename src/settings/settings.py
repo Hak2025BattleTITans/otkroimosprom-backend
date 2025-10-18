@@ -27,13 +27,17 @@ class Settings(BaseSettings):
     workers: int = 1
 
 
-
-    access_token_expire_minutes: int = 60
-
     optimized_dir: str = "optimized"
     upload_dir: str = "uploads"
     max_file_size_bytes: int = 5 * 1024 * 1024 # 5 MB
     csv_content_types: list[str] = ["text/csv", "application/vnd.ms-excel"]
+
+    jwt_secret: str = "dev-secret-change-me"
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60
+    argon2_time_cost: int = 3
+    argon2_memory_cost: int = 64 * 1024 # 64 MiB
+    argon2_parallelism: int = 2
 
 settings = Settings()
 
