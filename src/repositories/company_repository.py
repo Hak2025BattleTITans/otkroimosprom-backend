@@ -3,7 +3,7 @@ from typing import List
 
 from sqlmodel import Session, select
 
-from src.models.models import CompanyCreate, CompanyUpdate, CompanyRead
+from models.models import CompanyCreate, CompanyUpdate, CompanyRead
 
 logger = logging.getLogger(__name__)
 
