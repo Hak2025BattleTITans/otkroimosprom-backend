@@ -66,6 +66,7 @@ class CompanyResponse(BaseModel):
     confirmation_status: str
     confirmed_at: Optional[datetime] = None
     confirmer_identifier: Optional[str] = None
+    created_at: datetime
     updated_at: datetime
 
 class CompanyListResponse(BaseModel):
@@ -142,6 +143,7 @@ async def get_user_companies(
                 confirmation_status=company.confirmation_status.value,
                 confirmed_at=company.confirmed_at,
                 confirmer_identifier=company.confirmer_identifier,
+                created_at=company.created_at,
                 updated_at=company.updated_at
             )
             for company in companies
@@ -189,6 +191,7 @@ async def get_company(
             confirmation_status=company.confirmation_status.value,
             confirmed_at=company.confirmed_at,
             confirmer_identifier=company.confirmer_identifier,
+            created_at=company.created_at,
             updated_at=company.updated_at
         )
 
@@ -245,6 +248,7 @@ async def update_company(
             confirmation_status=company.confirmation_status.value,
             confirmed_at=company.confirmed_at,
             confirmer_identifier=company.confirmer_identifier,
+            created_at=company.created_at,
             updated_at=company.updated_at
         )
 
@@ -302,6 +306,7 @@ async def update_company_key_metrics(
             confirmation_status=company.confirmation_status.value,
             confirmed_at=company.confirmed_at,
             confirmer_identifier=company.confirmer_identifier,
+            created_at=company.created_at,
             updated_at=company.updated_at
         )
 

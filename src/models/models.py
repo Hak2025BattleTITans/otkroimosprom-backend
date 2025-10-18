@@ -141,6 +141,9 @@ class Company(SQLModel, table=True):
     confirmed_at: Optional[datetime.datetime] = Field(description="Когда подтвердили компанию")
     confirmer_identifier: Optional[str] = Field(description="Идентификатор (логин или имя системы)")
 
+    created_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
+    updated_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
+
     json_data: Dict[str, Any] = Field(
         default_factory=dict,
         sa_column=Column(JSON, nullable=False)
