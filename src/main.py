@@ -8,7 +8,7 @@ from settings import settings
 if __name__ == "__main__":
     host = settings.host
     port = settings.port
-    log_level = settings.logging_level
+    log_level = settings.uvicorn_log_level
     reload_enabled = settings.reload in ("1", "true", "yes")
     workers = settings.workers
 

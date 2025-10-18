@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     postgresql_uri: str
     logging_level: str = "info"
     logging_format: str = "standard"
+    uvicorn_log_level: str = "info"
 
     host: str = "0.0.0.0"
     port: int = 2201
