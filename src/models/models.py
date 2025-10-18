@@ -5,9 +5,35 @@ from typing import Any, Dict, List, Optional
 
 from dotenv import load_dotenv
 from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy import BigInteger
 from sqlmodel import Column, Field, Relationship, SQLModel
 
 from settings import settings
+
+class UserCompanyLink(SQLModel, table=True):
+    __tablename__ = "user_company_link"
+    user_id: int = Field(foreign_key="users.id", primary_key=True)
+    company_id: int = Field(foreign_key="companies.id", primary_key=True)
+
+class UserCreate(SQLModel):
+    username: str = Field(description="Имя пользователя")
+    salt: str = Field(description="Соль для пароля")
+    password_hash: str = Field(description="Хеш пароля")
+    created_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
+    updated_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
+
+class UserUpdate(SQLModel):
+    salt: str | None = None
+    password_hash: str | None = None
+    updated_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
+
+class UserRead(SQLModel):
+    id: int
+    username: str
+    salt: str
+    password_hash: str
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
 
 class User(SQLModel, table=True):
     __tablename__ = "users"
@@ -24,6 +50,12 @@ class User(SQLModel, table=True):
     updated_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
     created_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
 
+    tokens: List["Token"] = Relationship(back_populates="user")
+    companies: List["Company"] = Relationship(
+        back_populates="users",
+        link_model=UserCompanyLink
+    )
+
 
 class Token(SQLModel, table=True):
     __tablename__ = "tokens"
@@ -38,7 +70,7 @@ class Token(SQLModel, table=True):
     token_type: str = Field(description="Тип токена", default="bearer")
     user_id: int = Field(foreign_key="users.id")
 
-    user: User = Relationship(back_populates="token")
+    user: "User" = Relationship(back_populates="tokens")
     created_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
     expires_at: datetime.datetime = Field(
         default_factory=lambda:
@@ -48,7 +80,7 @@ class Token(SQLModel, table=True):
 
 class CompanyCreate(SQLModel):
     name: str = Field(description="Название компании")
-    inn: int = Field(description="ИНН компании")
+    inn: int = Field(description="ИНН компании", sa_column=Column(BigInteger))
     confirmed_by: Optional[str] = Field(description="Кто подтвердил компанию")
     confirmed_at: Optional[datetime.datetime] = Field(description="Когда подтвердили компанию")
     confirmer_identifier: Optional[str] = Field(description="Идентификатор (логин или имя системы)")
@@ -61,7 +93,7 @@ class CompanyCreate(SQLModel):
 class CompanyRead(SQLModel):
     id: int
     name: str
-    inn: int
+    inn: int = Field(sa_column=Column(BigInteger))
     confirmed_by: Optional[str] = Field(description="Кто подтвердил компанию")
     confirmed_at: Optional[datetime.datetime] = Field(description="Когда подтвердили компанию")
     confirmer_identifier: Optional[str] = Field(description="Идентификатор (логин или имя системы)")
@@ -73,7 +105,7 @@ class CompanyRead(SQLModel):
 
 class CompanyUpdate(SQLModel):
     name: Optional[str] = Field(description="Название компании")
-    inn: Optional[int] = Field(description="ИНН компании")
+    inn: Optional[int] = Field(description="ИНН компании", sa_column=Column(BigInteger))
     confirmed_by: Optional[str] = Field(description="Кто подтвердил компанию")
     confirmed_at: Optional[datetime.datetime] = Field(description="Когда подтвердили компанию")
     confirmer_identifier: Optional[str] = Field(description="Идентификатор (логин или имя системы)")
@@ -95,7 +127,7 @@ class Company(SQLModel, table=True):
         index=True,
         sa_column_kwargs={"autoincrement": True}
     )
-    inn: int = Field(description="ИНН компании")
+    inn: int = Field(description="ИНН компании", sa_column=Column(BigInteger))
     name: str = Field(description="Название компании")
     full_name: str = Field(description="Полное наименование компании")
     spark_status: str = Field(description="Статус СПАРК")
@@ -113,12 +145,7 @@ class Company(SQLModel, table=True):
         default_factory=dict,
         sa_column=Column(JSON, nullable=False)
     )
-
-
-class UserBase(SQLModel, table=True):
-    __tablename__ = "user_base"
-    user_id: int = Field(foreign_key="users.id", primary_key=True)
-    company_id: int = Field(foreign_key="companies.id", primary_key=True)
-
-    user: User = Relationship(back_populates="user_base")
-    company: Company = Relationship(back_populates="user_base")
+    users: List["User"] = Relationship(
+        back_populates="companies",
+        link_model=UserCompanyLink
+    )
