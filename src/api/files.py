@@ -15,7 +15,7 @@ from api.auth import get_current_user
 from csv_reader.reader import AsyncCSVReader
 from database.database import db
 from logging_config import LOGGING_CONFIG, ColoredFormatter
-from models import Company, UserBase, User
+from models import Company, UserCompanyLink, User, UserCreate
 from settings import settings
 
 
@@ -34,8 +34,8 @@ router = APIRouter(
     dependencies=[Depends(get_current_user)]
     )
 
-UPLOAD_DIR = settings.upload_dir
-OPTIMIZED_DIR = settings.optimized_dir
+UPLOAD_DIR = Path(settings.upload_dir)
+OPTIMIZED_DIR = Path(settings.optimized_dir)
 
 MAX_FILE_SIZE_BYTES = settings.max_file_size_bytes
 CSV_CONTENT_TYPES = settings.csv_content_types  # browsers often use the latter
@@ -188,7 +188,7 @@ async def upload_csv_file(
                 session.flush()  # Get the ID
 
                 # Create UserBase relationship
-                user_base = UserBase(
+                user_base = UserCompanyLink(
                     user_id=current_user.id,
                     company_id=company.id
                 )
@@ -240,8 +240,8 @@ async def get_user_companies(
 
         statement = (
             select(Company)
-            .join(UserBase)
-            .where(UserBase.user_id == current_user.id)
+            .join(UserCompanyLink)
+            .where(UserCompanyLink.user_id == current_user.id)
             .limit(limit)
             .offset(offset)
         )
@@ -286,10 +286,10 @@ async def get_company_details(
         # Проверяем, что компания принадлежит пользователю
         statement = (
             select(Company)
-            .join(UserBase)
+            .join(UserCompanyLink)
             .where(
                 Company.id == company_id,
-                UserBase.user_id == current_user.id
+                UserCompanyLink.user_id == current_user.id
             )
         )
 
@@ -335,10 +335,10 @@ async def get_company_json(
         # Проверяем, что компания принадлежит пользователю
         statement = (
             select(Company)
-            .join(UserBase)
+            .join(UserCompanyLink)
             .where(
                 Company.id == company_id,
-                UserBase.user_id == current_user.id
+                UserCompanyLink.user_id == current_user.id
             )
         )
 
