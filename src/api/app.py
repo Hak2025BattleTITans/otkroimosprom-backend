@@ -1,17 +1,13 @@
 ﻿import logging
 import os
-from logging.config import dictConfig
 from contextlib import asynccontextmanager
+from logging.config import dictConfig
 
 from fastapi import APIRouter, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import auth_router
-from api.data_router import router as data_router
-from api.user_router import router as user_router
-from api.files import router as files_router
+from api import auth_router, files_router
 from logging_config import LOGGING_CONFIG, ColoredFormatter
-from src.database import init_db
 
 # Setup logging
 dictConfig(LOGGING_CONFIG)
