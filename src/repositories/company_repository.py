@@ -7,7 +7,7 @@ from src.models.models import CompanyCreate, CompanyUpdate, CompanyRead
 
 logger = logging.getLogger(__name__)
 
-class DataRepository:
+class CompanyRepository:
     def __init__(self, session: Session):
         self.session = session
 
