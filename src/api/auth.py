@@ -13,7 +13,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from pydantic import BaseModel
+from sqlmodel import Session
 
+from src.database import get_session
+from src.repositories.user_repository import UserRepository
+from src.models import User as UserModel, UserRead, Token
 from logging_config import LOGGING_CONFIG, ColoredFormatter
 
 # Setup logging
