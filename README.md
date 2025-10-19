@@ -1,4 +1,5 @@
-# otkroimosprom-backend
+# Переехал на https://github.com/Hack2025MosProm/backend
+## otkroimosprom-backend
 
 ## API
 
